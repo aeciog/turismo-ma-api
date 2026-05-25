@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/destinos")  // <- adicione o path
 @RequiredArgsConstructor
 @Tag(name = "Destinos", description = "Pontos turísticos do Maranhão")
 public class DestinoController {
@@ -40,13 +40,14 @@ public class DestinoController {
         return ResponseEntity.ok(service.buscarPorCategoria(categoria));
     }
 
-    @PostMapping("/{id}")
+    @PostMapping  // <- removido o "/{id}"
     @Operation(summary = "Criar novo destino")
     public ResponseEntity<DestinoResponse> criar(@Valid @RequestBody DestinoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(request));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar destino")
     public ResponseEntity<DestinoResponse> atualizar(@PathVariable Long id,
                                                      @Valid @RequestBody DestinoRequest request){
         return ResponseEntity.ok(service.atualizar(id, request));
@@ -54,7 +55,7 @@ public class DestinoController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar destino")
-    public ResponseEntity<Void> deletar (@PathVariable Long id){
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }

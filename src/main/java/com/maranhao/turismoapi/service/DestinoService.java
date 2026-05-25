@@ -36,18 +36,23 @@ public class DestinoService {
                 .toList();
     }
 
-    public DestinoResponse criar(DestinoRequest request){
+    public DestinoResponse criar(DestinoRequest request) {
         Destino destino = Destino.builder()
                 .nome(request.getNome())
                 .descricao(request.getDescricao())
                 .cidade(request.getCidade())
+                .estado("Maranhão")           // <- adicione
                 .imagemUrl(request.getImagemUrl())
                 .categoria(request.getCategoria())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
+                .avaliacaoMedia(0.0)          // <- adicione
+                .totalAvaliacoes(0)           // <- adicione
                 .build();
+
         return DestinoResponse.fromEntity(repository.save(destino));
     }
+
 public DestinoResponse atualizar(Long id, DestinoRequest request) {
      Destino destino = repository.findById(id)
              .orElseThrow(() -> new RuntimeException("Destino não encontrado"));
