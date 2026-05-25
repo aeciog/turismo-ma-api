@@ -1,9 +1,17 @@
 package com.maranhao.turismoapi.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "destinos")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Destino {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,9 +26,10 @@ public class Destino {
     @Column(nullable = false)
     private String cidade;
 
+
     private String estado = "Maranhão";
 
-    private String imageUrl;
+    private String imagemUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
