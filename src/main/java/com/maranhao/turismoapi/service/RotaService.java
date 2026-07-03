@@ -2,6 +2,7 @@ package com.maranhao.turismoapi.service;
 
 import com.maranhao.turismoapi.dto.RotaRequest;
 import com.maranhao.turismoapi.dto.RotaResponse;
+import com.maranhao.turismoapi.exception.ResourceNotFoundException;
 import com.maranhao.turismoapi.model.Destino;
 import com.maranhao.turismoapi.model.Rota;
 import com.maranhao.turismoapi.repository.DestinoRepository;
@@ -27,7 +28,7 @@ public class RotaService {
 
     public RotaResponse buscarPorId(Long id) {
         Rota rota = rotaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rota não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Rota não encontrada"));
         return RotaResponse.fromEntity(rota);
     }
 
@@ -52,7 +53,7 @@ public class RotaService {
 
     public RotaResponse atualizar(Long id, RotaRequest request) {
         Rota rota = rotaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rota não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Rota não encontrada"));
 
         List<Destino> destinos = destinoRepository.findAllById(
                 request.getDestinoIds() != null ? request.getDestinoIds() : List.of()
@@ -73,7 +74,7 @@ public class RotaService {
 
     public void deletar (Long id){
         rotaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rota inexistente"));
+                .orElseThrow(() -> new ResourceNotFoundException("Rota inexistente"));
         rotaRepository.deleteById(id);
     }
 }

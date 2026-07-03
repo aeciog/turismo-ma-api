@@ -2,6 +2,7 @@ package com.maranhao.turismoapi.service;
 
 import com.maranhao.turismoapi.dto.EventoRequest;
 import com.maranhao.turismoapi.dto.EventoResponse;
+import com.maranhao.turismoapi.exception.ResourceNotFoundException;
 import com.maranhao.turismoapi.model.Evento;
 import com.maranhao.turismoapi.repository.EventoRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,7 @@ public class EventoService {
 
     public EventoResponse atualizar(Long id, EventoRequest request) {
         Evento evento = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));
 
         evento.setNome(request.getNome());
         evento.setDescricao(request.getDescricao());
@@ -72,7 +73,7 @@ public class EventoService {
     }
     public void deletar(Long id) {
         repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));
         repository.deleteById(id);
     }
 

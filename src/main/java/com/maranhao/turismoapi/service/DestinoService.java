@@ -2,6 +2,7 @@ package com.maranhao.turismoapi.service;
 
 import com.maranhao.turismoapi.dto.DestinoRequest;
 import com.maranhao.turismoapi.dto.DestinoResponse;
+import com.maranhao.turismoapi.exception.ResourceNotFoundException;
 import com.maranhao.turismoapi.model.Categoria;
 import com.maranhao.turismoapi.model.Destino;
 import com.maranhao.turismoapi.repository.DestinoRepository;
@@ -55,7 +56,7 @@ public class DestinoService {
 
 public DestinoResponse atualizar(Long id, DestinoRequest request) {
      Destino destino = repository.findById(id)
-             .orElseThrow(() -> new RuntimeException("Destino não encontrado"));
+             .orElseThrow(() -> new ResourceNotFoundException("Destino não encontrado"));
 
      destino.setNome(request.getNome());
      destino.setDescricao(request.getDescricao());
