@@ -1,16 +1,45 @@
 package com.maranhao.turismoapi.config;
 
+import com.maranhao.turismoapi.repository.UsuarioRepository;
+import com.maranhao.turismoapi.security.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+
+    private final JwtFilter jwtFilter;
+    private final UsuarioRepository usuarioRepository;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    public UserDetailsService userDetailsService() {
+        return email -> usuarioRepository.findByEmail(email)
+                .map(u -> org.springframework.security.core.userdetails.User
+                        .withUsername(u.getEmail())
+                        .password(u.getSenha())
+                        .roles(u.getRole().name())
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("Usário não encontrado"));
+    }
 
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
@@ -18,6 +47,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                 // Swagger Liberado
                                 .requestMatchers(
@@ -28,8 +58,13 @@ public class SecurityConfig {
                                 ).permitAll()
                         //endpoint GET liberado para todos
                                 .requestMatchers("/api/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/**").authenticated()
                                 .anyRequest().authenticated()
-                        );
+                        )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
