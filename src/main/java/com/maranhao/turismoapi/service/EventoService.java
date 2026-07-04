@@ -26,7 +26,7 @@ public class EventoService {
 
     public EventoResponse buscarPorId(Long id) {
         Evento evento = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));
         return EventoResponse.fromEntity(evento);
     }
 

@@ -30,7 +30,7 @@ public class DestinoService {
     @Cacheable(value = "destino", key = "#id")
     public DestinoResponse buscarPorId(Long id){
         Destino destino = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Destino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Destino não encontrado"));
         return DestinoResponse.fromEntity(destino);
     }
 
@@ -79,7 +79,7 @@ public DestinoResponse atualizar(Long id, DestinoRequest request) {
 @CacheEvict(value = {"destinos", "destino"}, allEntries = true)
 public void deletar(Long id){
         repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Destino não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Destino não encontrado"));
         repository.deleteById(id);
 }
 
