@@ -7,6 +7,8 @@ import com.maranhao.turismoapi.model.Categoria;
 import com.maranhao.turismoapi.model.Destino;
 import com.maranhao.turismoapi.repository.DestinoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class DestinoService {
 
     private final DestinoRepository repository;
 
+    @Cacheable("destinos")
     public List<DestinoResponse> listarTodos(){
         return repository.findAll()
                 .stream()
@@ -24,6 +27,7 @@ public class DestinoService {
                 .toList();
     }
 
+    @Cacheable(value = "destino", key = "#id")
     public DestinoResponse buscarPorId(Long id){
         Destino destino = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Destino não encontrado"));
@@ -37,6 +41,8 @@ public class DestinoService {
                 .toList();
     }
 
+
+    @CacheEvict (value = {"destinos", "destino"}, allEntries = true)
     public DestinoResponse criar(DestinoRequest request) {
         Destino destino = Destino.builder()
                 .nome(request.getNome())
@@ -54,6 +60,7 @@ public class DestinoService {
         return DestinoResponse.fromEntity(repository.save(destino));
     }
 
+    @CacheEvict(value = {"destinos", "destino"}, allEntries = true)
 public DestinoResponse atualizar(Long id, DestinoRequest request) {
      Destino destino = repository.findById(id)
              .orElseThrow(() -> new ResourceNotFoundException("Destino não encontrado"));
@@ -68,6 +75,8 @@ public DestinoResponse atualizar(Long id, DestinoRequest request) {
      return DestinoResponse.fromEntity(repository.save(destino));
 }
 
+
+@CacheEvict(value = {"destinos", "destino"}, allEntries = true)
 public void deletar(Long id){
         repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Destino não encontrado"));

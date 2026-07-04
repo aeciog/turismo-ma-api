@@ -1,6 +1,11 @@
 spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
   application:
     name: turismo-api
+
 
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/turismo_ma?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
